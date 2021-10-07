@@ -1,7 +1,6 @@
 # Imports
 from bs4 import BeautifulSoup
 from selenium import webdriver
-from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
@@ -11,11 +10,10 @@ import random
 
 
 def extractPageSource(URL):
-    options = Options()
-    options.binary_location = r'./Firefox/firefox.exe'
-    options.headless = True
-    driver = webdriver.Firefox(
-        executable_path=r'./geckodriver.exe', options=options)
+    chrome_options = webdriver.ChromeOptions()
+    chrome_options.headless = True
+    driver = webdriver.Chrome(
+        executable_path="./chromedriver.exe", options=chrome_options)
     # get source code
     driver.get(URL)
     html = driver.page_source
@@ -50,11 +48,10 @@ def scrape():
     html_table_string = info_table.to_html()
 
     URL = "https://marshemispheres.com/"
-    options = Options()
-    options.binary_location = r'./Firefox/firefox.exe'
-    options.headless = True
-    driver = webdriver.Firefox(
-        executable_path=r'./geckodriver.exe', options=options)
+    chrome_options = webdriver.ChromeOptions()
+    chrome_options.headless = True
+    driver = webdriver.Chrome(
+        executable_path="./chromedriver.exe", options=chrome_options)
     # get source code
     driver.get(URL)
     hemisphere_image_urls = []
@@ -67,7 +64,7 @@ def scrape():
         img_title = driver.find_element_by_xpath(
             '//*[@id="results"]/div[1]/div/div[3]/h2').text
         hemisphere_image_urls.append({'title': img_title, 'img_url': img_src})
-        driver.execute_script("window.history.go(-1)")
+        driver.back()
 
     driver.close()
     return {"data": {'hemisphere_image_urls': hemisphere_image_urls, 'html_table_string': html_table_string, 'featured_image_url': featured_image_url, 'news_title': random.choice(news_title), 'news_p': random.choice(news_p)}}
